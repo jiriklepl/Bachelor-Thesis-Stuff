@@ -1,0 +1,1073 @@
+From: <Saved by Blink>
+Snapshot-Content-Location: http://www.quut.com/c/ANSI-C-grammar-y.html
+Subject: ANSI C grammar (Yacc)
+Date: Tue, 23 Jun 2020 19:24:35 -0000
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----MultipartBoundary--bgliltWeFjclm1df8jVlW0Hx5tHBOABUVxvTxFnZFH----"
+
+
+------MultipartBoundary--bgliltWeFjclm1df8jVlW0Hx5tHBOABUVxvTxFnZFH----
+Content-Type: text/html
+Content-ID: <frame-35A20D6F2BEAB1129D4EB63D2AF75693@mhtml.blink>
+Content-Transfer-Encoding: quoted-printable
+Content-Location: http://www.quut.com/c/ANSI-C-grammar-y.html
+
+<html><head><meta http-equiv=3D"Content-Type" content=3D"text/html; charset=
+=3DUTF-8"><link rel=3D"stylesheet" type=3D"text/css" href=3D"cid:css-e4ec45=
+2d-a20b-47ba-b0c2-f304e9a83e8c@mhtml.blink" />
+<title>ANSI C grammar (Yacc)</title>
+<link rel=3D"made" rev=3D"made" href=3D"mailto:jutta@pobox.com">
+
+</head><body>
+
+<h1>ANSI C Yacc grammar</h1>
+
+(This Yacc file is accompanied by a <a href=3D"http://www.quut.com/c/ANSI-C=
+-grammar-l-2011.html">matching Lex file</a><a>.)<br>
+</a><p><a>
+In 1985, Jeff Lee published his Yacc grammar based on a draft version
+of the ANSI C standard, along with a supporting Lex specification.
+Tom Stockfisch reposted those files to net.sources in 1987;
+as mentioned in the answer to </a><a href=3D"http://www.quut.com/c/c-faq/c-=
+17.html#17-25">question 17.25</a>
+of the comp.lang.c FAQ, they used to be available from ftp.uu.net as
+usenet/net.sources/ansi.c.grammar.Z.
+</p><p>
+The version you see here has been updated based on the 2011 ISO C standard.
+(The previous version's <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-1=
+999.html">Lex</a>
+and=20
+<a href=3D"http://www.quut.com/c/ANSI-C-grammar-y-1999.html">Yacc</a> files=
+ for ANSI C9X still exist
+as archived copies.)
+</p><p>
+This grammar assumes that translation phases 1..5 have already been complet=
+ed,
+including preprocessing and <code>_Pragma</code> processing.
+The Lex rule for <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.htm=
+l#STRING_LITERAL">string literals</a> will perform concatenation (translati=
+on phase 6).
+Transliteration of universal character names (<code>\u</code><i>HHHH</i> or=
+ <code>\U</code><i>HHHHHHHH</i>) must
+have been done by either the preprocessor or a replacement for the
+<code>input()</code> macro used by Lex (or the YY_INPUT function used by Fl=
+ex)
+to read characters.
+Although <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#lex_ru=
+le_for_comment">comments</a> should
+have been changed to space characters during translation phase 3, there
+are Lex rules for them anyway.
+</p><p>
+I want to keep this version as close to the current C Standard grammar
+as possible; please let me know if you discover
+discrepancies.<br>
+(There is an <a href=3D"http://www.quut.com/c/ANSI-C-grammar-FAQ.html">FAQ<=
+/a>
+for this grammar that you might want to read first.)
+</p><p>
+jutta@pobox.com, 2012
+</p><p>
+Last edit:
+2012-12-18 DAGwyn@aol.com
+</p><hr>
+Note: There are two shift/reduce conflicts, correctly resolved by default:
+<pre>  IF '(' expression ')' statement _ ELSE statement
+</pre>
+and
+<pre>  ATOMIC _ '(' type_name ')'
+</pre>
+where "_" has been used to flag the points of ambiguity.
+<p>
+</p><hr>
+<p>
+</p><pre>%token	<a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html=
+#IDENTIFIER">IDENTIFIER</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar=
+-l-2011.html#I_CONSTANT">I_CONSTANT</a> <a href=3D"http://www.quut.com/c/AN=
+SI-C-grammar-l-2011.html#F_CONSTANT">F_CONSTANT</a> <a href=3D"http://www.q=
+uut.com/c/ANSI-C-grammar-l-2011.html#STRING_LITERAL">STRING_LITERAL</a> <a =
+href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#FUNC_NAME">FUNC_NA=
+ME</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#SIZEOF">=
+SIZEOF</a>
+%token	<a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#PTR_OP">=
+PTR_OP</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#INC_=
+OP">INC_OP</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#=
+DEC_OP">DEC_OP</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.h=
+tml#LEFT_OP">LEFT_OP</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-=
+2011.html#RIGHT_OP">RIGHT_OP</a> <a href=3D"http://www.quut.com/c/ANSI-C-gr=
+ammar-l-2011.html#LE_OP">LE_OP</a> <a href=3D"http://www.quut.com/c/ANSI-C-=
+grammar-l-2011.html#GE_OP">GE_OP</a> <a href=3D"http://www.quut.com/c/ANSI-=
+C-grammar-l-2011.html#EQ_OP">EQ_OP</a> <a href=3D"http://www.quut.com/c/ANS=
+I-C-grammar-l-2011.html#NE_OP">NE_OP</a>
+%token	<a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#AND_OP">=
+AND_OP</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#OR_O=
+P">OR_OP</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#MU=
+L_ASSIGN">MUL_ASSIGN</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-=
+2011.html#DIV_ASSIGN">DIV_ASSIGN</a> <a href=3D"http://www.quut.com/c/ANSI-=
+C-grammar-l-2011.html#MOD_ASSIGN">MOD_ASSIGN</a> <a href=3D"http://www.quut=
+.com/c/ANSI-C-grammar-l-2011.html#ADD_ASSIGN">ADD_ASSIGN</a>
+%token	<a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#SUB_ASSI=
+GN">SUB_ASSIGN</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.h=
+tml#LEFT_ASSIGN">LEFT_ASSIGN</a> <a href=3D"http://www.quut.com/c/ANSI-C-gr=
+ammar-l-2011.html#RIGHT_ASSIGN">RIGHT_ASSIGN</a> <a href=3D"http://www.quut=
+.com/c/ANSI-C-grammar-l-2011.html#AND_ASSIGN">AND_ASSIGN</a>
+%token	<a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#XOR_ASSI=
+GN">XOR_ASSIGN</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.h=
+tml#OR_ASSIGN">OR_ASSIGN</a>
+%token	<a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#TYPEDEF_=
+NAME">TYPEDEF_NAME</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-20=
+11.html#ENUMERATION_CONSTANT">ENUMERATION_CONSTANT</a>
+
+%token	<a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#TYPEDEF"=
+>TYPEDEF</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#EX=
+TERN">EXTERN</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.htm=
+l#STATIC">STATIC</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011=
+.html#AUTO">AUTO</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011=
+.html#REGISTER">REGISTER</a> <a href=3D"http://www.quut.com/c/ANSI-C-gramma=
+r-l-2011.html#INLINE">INLINE</a>
+%token	<a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#CONST">C=
+ONST</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#RESTRI=
+CT">RESTRICT</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.htm=
+l#VOLATILE">VOLATILE</a>
+%token	<a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#BOOL">BO=
+OL</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#CHAR">CH=
+AR</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#SHORT">S=
+HORT</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#INT">I=
+NT</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#LONG">LO=
+NG</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#SIGNED">=
+SIGNED</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#UNSI=
+GNED">UNSIGNED</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.h=
+tml#FLOAT">FLOAT</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011=
+.html#DOUBLE">DOUBLE</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-=
+2011.html#VOID">VOID</a>
+%token	<a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#COMPLEX"=
+>COMPLEX</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#IM=
+AGINARY">IMAGINARY</a>=20
+%token	<a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#STRUCT">=
+STRUCT</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#UNIO=
+N">UNION</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#EN=
+UM">ENUM</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#EL=
+LIPSIS">ELLIPSIS</a>
+
+%token	<a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#CASE">CA=
+SE</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#DEFAULT"=
+>DEFAULT</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#IF=
+">IF</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#ELSE">=
+ELSE</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#SWITCH=
+">SWITCH</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#WH=
+ILE">WHILE</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#=
+DO">DO</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#FOR"=
+>FOR</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#GOTO">=
+GOTO</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#CONTIN=
+UE">CONTINUE</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.htm=
+l#BREAK">BREAK</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.h=
+tml#RETURN">RETURN</a>
+
+%token	<a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#ALIGNAS"=
+>ALIGNAS</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#AL=
+IGNOF">ALIGNOF</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.h=
+tml#ATOMIC">ATOMIC</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-20=
+11.html#GENERIC">GENERIC</a> <a href=3D"http://www.quut.com/c/ANSI-C-gramma=
+r-l-2011.html#NORETURN">NORETURN</a> <a href=3D"http://www.quut.com/c/ANSI-=
+C-grammar-l-2011.html#STATIC_ASSERT">STATIC_ASSERT</a> <a href=3D"http://ww=
+w.quut.com/c/ANSI-C-grammar-l-2011.html#THREAD_LOCAL">THREAD_LOCAL</a>
+
+%start <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#translation_u=
+nit">translation_unit</a>
+%%
+
+<a name=3D"primary_expression">primary_expression</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#IDENTIFIER">=
+IDENTIFIER</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#constant">constan=
+t</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#string">string</a=
+>
+	| '(' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#expression">e=
+xpression</a> ')'
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#generic_selection=
+">generic_selection</a>
+	;
+
+<a name=3D"constant">constant</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#I_CONSTANT">=
+I_CONSTANT</a>		/* includes character_constant */
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#F_CONSTANT">=
+F_CONSTANT</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#ENUMERATION_=
+CONSTANT">ENUMERATION_CONSTANT</a>	/* after it has been defined as such */
+	;
+
+<a name=3D"enumeration_constant">enumeration_constant</a>		/* before it has=
+ been defined as such */
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#IDENTIFIER">=
+IDENTIFIER</a>
+	;
+
+<a name=3D"string">string</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#STRING_LITER=
+AL">STRING_LITERAL</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#FUNC_NAME">F=
+UNC_NAME</a>
+	;
+
+<a name=3D"generic_selection">generic_selection</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#GENERIC">GEN=
+ERIC</a> '(' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#assignm=
+ent_expression">assignment_expression</a> ',' <a href=3D"http://www.quut.co=
+m/c/ANSI-C-grammar-y.html#generic_assoc_list">generic_assoc_list</a> ')'
+	;
+
+<a name=3D"generic_assoc_list">generic_assoc_list</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#generic_associati=
+on">generic_association</a>
+	| generic_assoc_list ',' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y=
+.html#generic_association">generic_association</a>
+	;
+
+<a name=3D"generic_association">generic_association</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#type_name">type_n=
+ame</a> ':' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#assignme=
+nt_expression">assignment_expression</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#DEFAULT">DEF=
+AULT</a> ':' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#assignm=
+ent_expression">assignment_expression</a>
+	;
+
+<a name=3D"postfix_expression">postfix_expression</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#primary_expressio=
+n">primary_expression</a>
+	| postfix_expression '[' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y=
+.html#expression">expression</a> ']'
+	| postfix_expression '(' ')'
+	| postfix_expression '(' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y=
+.html#argument_expression_list">argument_expression_list</a> ')'
+	| postfix_expression '.' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l=
+-2011.html#IDENTIFIER">IDENTIFIER</a>
+	| postfix_expression <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-201=
+1.html#PTR_OP">PTR_OP</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l=
+-2011.html#IDENTIFIER">IDENTIFIER</a>
+	| postfix_expression <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-201=
+1.html#INC_OP">INC_OP</a>
+	| postfix_expression <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-201=
+1.html#DEC_OP">DEC_OP</a>
+	| '(' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#type_name">ty=
+pe_name</a> ')' '{' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#=
+initializer_list">initializer_list</a> '}'
+	| '(' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#type_name">ty=
+pe_name</a> ')' '{' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#=
+initializer_list">initializer_list</a> ',' '}'
+	;
+
+<a name=3D"argument_expression_list">argument_expression_list</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#assignment_expres=
+sion">assignment_expression</a>
+	| argument_expression_list ',' <a href=3D"http://www.quut.com/c/ANSI-C-gra=
+mmar-y.html#assignment_expression">assignment_expression</a>
+	;
+
+<a name=3D"unary_expression">unary_expression</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#postfix_expressio=
+n">postfix_expression</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#INC_OP">INC_=
+OP</a> unary_expression
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#DEC_OP">DEC_=
+OP</a> unary_expression
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#unary_operator">u=
+nary_operator</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#ca=
+st_expression">cast_expression</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#SIZEOF">SIZE=
+OF</a> unary_expression
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#SIZEOF">SIZE=
+OF</a> '(' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#type_name=
+">type_name</a> ')'
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#ALIGNOF">ALI=
+GNOF</a> '(' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#type_na=
+me">type_name</a> ')'
+	;
+
+<a name=3D"unary_operator">unary_operator</a>
+	: '&amp;'
+	| '*'
+	| '+'
+	| '-'
+	| '~'
+	| '!'
+	;
+
+<a name=3D"cast_expression">cast_expression</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#unary_expression"=
+>unary_expression</a>
+	| '(' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#type_name">ty=
+pe_name</a> ')' cast_expression
+	;
+
+<a name=3D"multiplicative_expression">multiplicative_expression</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#cast_expression">=
+cast_expression</a>
+	| multiplicative_expression '*' <a href=3D"http://www.quut.com/c/ANSI-C-gr=
+ammar-y.html#cast_expression">cast_expression</a>
+	| multiplicative_expression '/' <a href=3D"http://www.quut.com/c/ANSI-C-gr=
+ammar-y.html#cast_expression">cast_expression</a>
+	| multiplicative_expression '%' <a href=3D"http://www.quut.com/c/ANSI-C-gr=
+ammar-y.html#cast_expression">cast_expression</a>
+	;
+
+<a name=3D"additive_expression">additive_expression</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#multiplicative_ex=
+pression">multiplicative_expression</a>
+	| additive_expression '+' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-=
+y.html#multiplicative_expression">multiplicative_expression</a>
+	| additive_expression '-' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-=
+y.html#multiplicative_expression">multiplicative_expression</a>
+	;
+
+<a name=3D"shift_expression">shift_expression</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#additive_expressi=
+on">additive_expression</a>
+	| shift_expression <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.=
+html#LEFT_OP">LEFT_OP</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y=
+.html#additive_expression">additive_expression</a>
+	| shift_expression <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.=
+html#RIGHT_OP">RIGHT_OP</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar=
+-y.html#additive_expression">additive_expression</a>
+	;
+
+<a name=3D"relational_expression">relational_expression</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#shift_expression"=
+>shift_expression</a>
+	| relational_expression '&lt;' <a href=3D"http://www.quut.com/c/ANSI-C-gra=
+mmar-y.html#shift_expression">shift_expression</a>
+	| relational_expression '&gt;' <a href=3D"http://www.quut.com/c/ANSI-C-gra=
+mmar-y.html#shift_expression">shift_expression</a>
+	| relational_expression <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-=
+2011.html#LE_OP">LE_OP</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-=
+y.html#shift_expression">shift_expression</a>
+	| relational_expression <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-=
+2011.html#GE_OP">GE_OP</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-=
+y.html#shift_expression">shift_expression</a>
+	;
+
+<a name=3D"equality_expression">equality_expression</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#relational_expres=
+sion">relational_expression</a>
+	| equality_expression <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-20=
+11.html#EQ_OP">EQ_OP</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.=
+html#relational_expression">relational_expression</a>
+	| equality_expression <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-20=
+11.html#NE_OP">NE_OP</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.=
+html#relational_expression">relational_expression</a>
+	;
+
+<a name=3D"and_expression">and_expression</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#equality_expressi=
+on">equality_expression</a>
+	| and_expression '&amp;' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y=
+.html#equality_expression">equality_expression</a>
+	;
+
+<a name=3D"exclusive_or_expression">exclusive_or_expression</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#and_expression">a=
+nd_expression</a>
+	| exclusive_or_expression '^' <a href=3D"http://www.quut.com/c/ANSI-C-gram=
+mar-y.html#and_expression">and_expression</a>
+	;
+
+<a name=3D"inclusive_or_expression">inclusive_or_expression</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#exclusive_or_expr=
+ession">exclusive_or_expression</a>
+	| inclusive_or_expression '|' <a href=3D"http://www.quut.com/c/ANSI-C-gram=
+mar-y.html#exclusive_or_expression">exclusive_or_expression</a>
+	;
+
+<a name=3D"logical_and_expression">logical_and_expression</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#inclusive_or_expr=
+ession">inclusive_or_expression</a>
+	| logical_and_expression <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l=
+-2011.html#AND_OP">AND_OP</a> <a href=3D"http://www.quut.com/c/ANSI-C-gramm=
+ar-y.html#inclusive_or_expression">inclusive_or_expression</a>
+	;
+
+<a name=3D"logical_or_expression">logical_or_expression</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#logical_and_expre=
+ssion">logical_and_expression</a>
+	| logical_or_expression <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-=
+2011.html#OR_OP">OR_OP</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-=
+y.html#logical_and_expression">logical_and_expression</a>
+	;
+
+<a name=3D"conditional_expression">conditional_expression</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#logical_or_expres=
+sion">logical_or_expression</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#logical_or_expres=
+sion">logical_or_expression</a> '?' <a href=3D"http://www.quut.com/c/ANSI-C=
+-grammar-y.html#expression">expression</a> ':' conditional_expression
+	;
+
+<a name=3D"assignment_expression">assignment_expression</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#conditional_expre=
+ssion">conditional_expression</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#unary_expression"=
+>unary_expression</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.htm=
+l#assignment_operator">assignment_operator</a> assignment_expression
+	;
+
+<a name=3D"assignment_operator">assignment_operator</a>
+	: '=3D'
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#MUL_ASSIGN">=
+MUL_ASSIGN</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#DIV_ASSIGN">=
+DIV_ASSIGN</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#MOD_ASSIGN">=
+MOD_ASSIGN</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#ADD_ASSIGN">=
+ADD_ASSIGN</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#SUB_ASSIGN">=
+SUB_ASSIGN</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#LEFT_ASSIGN"=
+>LEFT_ASSIGN</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#RIGHT_ASSIGN=
+">RIGHT_ASSIGN</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#AND_ASSIGN">=
+AND_ASSIGN</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#XOR_ASSIGN">=
+XOR_ASSIGN</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#OR_ASSIGN">O=
+R_ASSIGN</a>
+	;
+
+<a name=3D"expression">expression</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#assignment_expres=
+sion">assignment_expression</a>
+	| expression ',' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#as=
+signment_expression">assignment_expression</a>
+	;
+
+<a name=3D"constant_expression">constant_expression</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#conditional_expre=
+ssion">conditional_expression</a>	/* with constraints */
+	;
+
+<a name=3D"declaration">declaration</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#declaration_speci=
+fiers">declaration_specifiers</a> ';'
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#declaration_speci=
+fiers">declaration_specifiers</a> <a href=3D"http://www.quut.com/c/ANSI-C-g=
+rammar-y.html#init_declarator_list">init_declarator_list</a> ';'
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#static_assert_dec=
+laration">static_assert_declaration</a>
+	;
+
+<a name=3D"declaration_specifiers">declaration_specifiers</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#storage_class_spe=
+cifier">storage_class_specifier</a> declaration_specifiers
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#storage_class_spe=
+cifier">storage_class_specifier</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#type_specifier">t=
+ype_specifier</a> declaration_specifiers
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#type_specifier">t=
+ype_specifier</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#type_qualifier">t=
+ype_qualifier</a> declaration_specifiers
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#type_qualifier">t=
+ype_qualifier</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#function_specifie=
+r">function_specifier</a> declaration_specifiers
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#function_specifie=
+r">function_specifier</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#alignment_specifi=
+er">alignment_specifier</a> declaration_specifiers
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#alignment_specifi=
+er">alignment_specifier</a>
+	;
+
+<a name=3D"init_declarator_list">init_declarator_list</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#init_declarator">=
+init_declarator</a>
+	| init_declarator_list ',' <a href=3D"http://www.quut.com/c/ANSI-C-grammar=
+-y.html#init_declarator">init_declarator</a>
+	;
+
+<a name=3D"init_declarator">init_declarator</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#declarator">decla=
+rator</a> '=3D' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#init=
+ializer">initializer</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#declarator">decla=
+rator</a>
+	;
+
+<a name=3D"storage_class_specifier">storage_class_specifier</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#TYPEDEF">TYP=
+EDEF</a>	/* identifiers must be flagged as TYPEDEF_NAME */
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#EXTERN">EXTE=
+RN</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#STATIC">STAT=
+IC</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#THREAD_LOCAL=
+">THREAD_LOCAL</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#AUTO">AUTO</=
+a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#REGISTER">RE=
+GISTER</a>
+	;
+
+<a name=3D"type_specifier">type_specifier</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#VOID">VOID</=
+a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#CHAR">CHAR</=
+a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#SHORT">SHORT=
+</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#INT">INT</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#LONG">LONG</=
+a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#FLOAT">FLOAT=
+</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#DOUBLE">DOUB=
+LE</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#SIGNED">SIGN=
+ED</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#UNSIGNED">UN=
+SIGNED</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#BOOL">BOOL</=
+a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#COMPLEX">COM=
+PLEX</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#IMAGINARY">I=
+MAGINARY</a>	  	/* non-mandated extension */
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#atomic_type_speci=
+fier">atomic_type_specifier</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#struct_or_union_s=
+pecifier">struct_or_union_specifier</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#enum_specifier">e=
+num_specifier</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#TYPEDEF_NAME=
+">TYPEDEF_NAME</a>		/* after it has been defined as such */
+	;
+
+<a name=3D"struct_or_union_specifier">struct_or_union_specifier</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#struct_or_union">=
+struct_or_union</a> '{' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.h=
+tml#struct_declaration_list">struct_declaration_list</a> '}'
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#struct_or_union">=
+struct_or_union</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.=
+html#IDENTIFIER">IDENTIFIER</a> '{' <a href=3D"http://www.quut.com/c/ANSI-C=
+-grammar-y.html#struct_declaration_list">struct_declaration_list</a> '}'
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#struct_or_union">=
+struct_or_union</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.=
+html#IDENTIFIER">IDENTIFIER</a>
+	;
+
+<a name=3D"struct_or_union">struct_or_union</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#STRUCT">STRU=
+CT</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#UNION">UNION=
+</a>
+	;
+
+<a name=3D"struct_declaration_list">struct_declaration_list</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#struct_declaratio=
+n">struct_declaration</a>
+	| struct_declaration_list <a href=3D"http://www.quut.com/c/ANSI-C-grammar-=
+y.html#struct_declaration">struct_declaration</a>
+	;
+
+<a name=3D"struct_declaration">struct_declaration</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#specifier_qualifi=
+er_list">specifier_qualifier_list</a> ';'	/* for anonymous struct/union */
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#specifier_qualifi=
+er_list">specifier_qualifier_list</a> <a href=3D"http://www.quut.com/c/ANSI=
+-C-grammar-y.html#struct_declarator_list">struct_declarator_list</a> ';'
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#static_assert_dec=
+laration">static_assert_declaration</a>
+	;
+
+<a name=3D"specifier_qualifier_list">specifier_qualifier_list</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#type_specifier">t=
+ype_specifier</a> specifier_qualifier_list
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#type_specifier">t=
+ype_specifier</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#type_qualifier">t=
+ype_qualifier</a> specifier_qualifier_list
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#type_qualifier">t=
+ype_qualifier</a>
+	;
+
+<a name=3D"struct_declarator_list">struct_declarator_list</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#struct_declarator=
+">struct_declarator</a>
+	| struct_declarator_list ',' <a href=3D"http://www.quut.com/c/ANSI-C-gramm=
+ar-y.html#struct_declarator">struct_declarator</a>
+	;
+
+<a name=3D"struct_declarator">struct_declarator</a>
+	: ':' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#constant_expr=
+ession">constant_expression</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#declarator">decla=
+rator</a> ':' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#consta=
+nt_expression">constant_expression</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#declarator">decla=
+rator</a>
+	;
+
+<a name=3D"enum_specifier">enum_specifier</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#ENUM">ENUM</=
+a> '{' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#enumerator_li=
+st">enumerator_list</a> '}'
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#ENUM">ENUM</=
+a> '{' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#enumerator_li=
+st">enumerator_list</a> ',' '}'
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#ENUM">ENUM</=
+a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#IDENTIFIER">=
+IDENTIFIER</a> '{' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#e=
+numerator_list">enumerator_list</a> '}'
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#ENUM">ENUM</=
+a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#IDENTIFIER">=
+IDENTIFIER</a> '{' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#e=
+numerator_list">enumerator_list</a> ',' '}'
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#ENUM">ENUM</=
+a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#IDENTIFIER">=
+IDENTIFIER</a>
+	;
+
+<a name=3D"enumerator_list">enumerator_list</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#enumerator">enume=
+rator</a>
+	| enumerator_list ',' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.ht=
+ml#enumerator">enumerator</a>
+	;
+
+<a name=3D"enumerator">enumerator</a>	/* identifiers must be flagged as ENU=
+MERATION_CONSTANT */
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#enumeration_const=
+ant">enumeration_constant</a> '=3D' <a href=3D"http://www.quut.com/c/ANSI-C=
+-grammar-y.html#constant_expression">constant_expression</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#enumeration_const=
+ant">enumeration_constant</a>
+	;
+
+<a name=3D"atomic_type_specifier">atomic_type_specifier</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#ATOMIC">ATOM=
+IC</a> '(' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#type_name=
+">type_name</a> ')'
+	;
+
+<a name=3D"type_qualifier">type_qualifier</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#CONST">CONST=
+</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#RESTRICT">RE=
+STRICT</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#VOLATILE">VO=
+LATILE</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#ATOMIC">ATOM=
+IC</a>
+	;
+
+<a name=3D"function_specifier">function_specifier</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#INLINE">INLI=
+NE</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#NORETURN">NO=
+RETURN</a>
+	;
+
+<a name=3D"alignment_specifier">alignment_specifier</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#ALIGNAS">ALI=
+GNAS</a> '(' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#type_na=
+me">type_name</a> ')'
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#ALIGNAS">ALI=
+GNAS</a> '(' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#constan=
+t_expression">constant_expression</a> ')'
+	;
+
+<a name=3D"declarator">declarator</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#pointer">pointer<=
+/a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#direct_declarato=
+r">direct_declarator</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#direct_declarator=
+">direct_declarator</a>
+	;
+
+<a name=3D"direct_declarator">direct_declarator</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#IDENTIFIER">=
+IDENTIFIER</a>
+	| '(' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#declarator">d=
+eclarator</a> ')'
+	| direct_declarator '[' ']'
+	| direct_declarator '[' '*' ']'
+	| direct_declarator '[' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-=
+2011.html#STATIC">STATIC</a> <a href=3D"http://www.quut.com/c/ANSI-C-gramma=
+r-y.html#type_qualifier_list">type_qualifier_list</a> <a href=3D"http://www=
+.quut.com/c/ANSI-C-grammar-y.html#assignment_expression">assignment_express=
+ion</a> ']'
+	| direct_declarator '[' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-=
+2011.html#STATIC">STATIC</a> <a href=3D"http://www.quut.com/c/ANSI-C-gramma=
+r-y.html#assignment_expression">assignment_expression</a> ']'
+	| direct_declarator '[' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.=
+html#type_qualifier_list">type_qualifier_list</a> '*' ']'
+	| direct_declarator '[' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.=
+html#type_qualifier_list">type_qualifier_list</a> <a href=3D"http://www.quu=
+t.com/c/ANSI-C-grammar-l-2011.html#STATIC">STATIC</a> <a href=3D"http://www=
+.quut.com/c/ANSI-C-grammar-y.html#assignment_expression">assignment_express=
+ion</a> ']'
+	| direct_declarator '[' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.=
+html#type_qualifier_list">type_qualifier_list</a> <a href=3D"http://www.quu=
+t.com/c/ANSI-C-grammar-y.html#assignment_expression">assignment_expression<=
+/a> ']'
+	| direct_declarator '[' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.=
+html#type_qualifier_list">type_qualifier_list</a> ']'
+	| direct_declarator '[' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.=
+html#assignment_expression">assignment_expression</a> ']'
+	| direct_declarator '(' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.=
+html#parameter_type_list">parameter_type_list</a> ')'
+	| direct_declarator '(' ')'
+	| direct_declarator '(' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.=
+html#identifier_list">identifier_list</a> ')'
+	;
+
+<a name=3D"pointer">pointer</a>
+	: '*' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#type_qualifie=
+r_list">type_qualifier_list</a> pointer
+	| '*' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#type_qualifie=
+r_list">type_qualifier_list</a>
+	| '*' pointer
+	| '*'
+	;
+
+<a name=3D"type_qualifier_list">type_qualifier_list</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#type_qualifier">t=
+ype_qualifier</a>
+	| type_qualifier_list <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.ht=
+ml#type_qualifier">type_qualifier</a>
+	;
+
+
+<a name=3D"parameter_type_list">parameter_type_list</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#parameter_list">p=
+arameter_list</a> ',' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-201=
+1.html#ELLIPSIS">ELLIPSIS</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#parameter_list">p=
+arameter_list</a>
+	;
+
+<a name=3D"parameter_list">parameter_list</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#parameter_declara=
+tion">parameter_declaration</a>
+	| parameter_list ',' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.htm=
+l#parameter_declaration">parameter_declaration</a>
+	;
+
+<a name=3D"parameter_declaration">parameter_declaration</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#declaration_speci=
+fiers">declaration_specifiers</a> <a href=3D"http://www.quut.com/c/ANSI-C-g=
+rammar-y.html#declarator">declarator</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#declaration_speci=
+fiers">declaration_specifiers</a> <a href=3D"http://www.quut.com/c/ANSI-C-g=
+rammar-y.html#abstract_declarator">abstract_declarator</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#declaration_speci=
+fiers">declaration_specifiers</a>
+	;
+
+<a name=3D"identifier_list">identifier_list</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#IDENTIFIER">=
+IDENTIFIER</a>
+	| identifier_list ',' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-20=
+11.html#IDENTIFIER">IDENTIFIER</a>
+	;
+
+<a name=3D"type_name">type_name</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#specifier_qualifi=
+er_list">specifier_qualifier_list</a> <a href=3D"http://www.quut.com/c/ANSI=
+-C-grammar-y.html#abstract_declarator">abstract_declarator</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#specifier_qualifi=
+er_list">specifier_qualifier_list</a>
+	;
+
+<a name=3D"abstract_declarator">abstract_declarator</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#pointer">pointer<=
+/a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#direct_abstract_=
+declarator">direct_abstract_declarator</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#pointer">pointer<=
+/a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#direct_abstract_d=
+eclarator">direct_abstract_declarator</a>
+	;
+
+<a name=3D"direct_abstract_declarator">direct_abstract_declarator</a>
+	: '(' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#abstract_decl=
+arator">abstract_declarator</a> ')'
+	| '[' ']'
+	| '[' '*' ']'
+	| '[' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#STATIC">=
+STATIC</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#type_qual=
+ifier_list">type_qualifier_list</a> <a href=3D"http://www.quut.com/c/ANSI-C=
+-grammar-y.html#assignment_expression">assignment_expression</a> ']'
+	| '[' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#STATIC">=
+STATIC</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#assignmen=
+t_expression">assignment_expression</a> ']'
+	| '[' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#type_qualifie=
+r_list">type_qualifier_list</a> <a href=3D"http://www.quut.com/c/ANSI-C-gra=
+mmar-l-2011.html#STATIC">STATIC</a> <a href=3D"http://www.quut.com/c/ANSI-C=
+-grammar-y.html#assignment_expression">assignment_expression</a> ']'
+	| '[' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#type_qualifie=
+r_list">type_qualifier_list</a> <a href=3D"http://www.quut.com/c/ANSI-C-gra=
+mmar-y.html#assignment_expression">assignment_expression</a> ']'
+	| '[' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#type_qualifie=
+r_list">type_qualifier_list</a> ']'
+	| '[' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#assignment_ex=
+pression">assignment_expression</a> ']'
+	| direct_abstract_declarator '[' ']'
+	| direct_abstract_declarator '[' '*' ']'
+	| direct_abstract_declarator '[' <a href=3D"http://www.quut.com/c/ANSI-C-g=
+rammar-l-2011.html#STATIC">STATIC</a> <a href=3D"http://www.quut.com/c/ANSI=
+-C-grammar-y.html#type_qualifier_list">type_qualifier_list</a> <a href=3D"h=
+ttp://www.quut.com/c/ANSI-C-grammar-y.html#assignment_expression">assignmen=
+t_expression</a> ']'
+	| direct_abstract_declarator '[' <a href=3D"http://www.quut.com/c/ANSI-C-g=
+rammar-l-2011.html#STATIC">STATIC</a> <a href=3D"http://www.quut.com/c/ANSI=
+-C-grammar-y.html#assignment_expression">assignment_expression</a> ']'
+	| direct_abstract_declarator '[' <a href=3D"http://www.quut.com/c/ANSI-C-g=
+rammar-y.html#type_qualifier_list">type_qualifier_list</a> <a href=3D"http:=
+//www.quut.com/c/ANSI-C-grammar-y.html#assignment_expression">assignment_ex=
+pression</a> ']'
+	| direct_abstract_declarator '[' <a href=3D"http://www.quut.com/c/ANSI-C-g=
+rammar-y.html#type_qualifier_list">type_qualifier_list</a> <a href=3D"http:=
+//www.quut.com/c/ANSI-C-grammar-l-2011.html#STATIC">STATIC</a> <a href=3D"h=
+ttp://www.quut.com/c/ANSI-C-grammar-y.html#assignment_expression">assignmen=
+t_expression</a> ']'
+	| direct_abstract_declarator '[' <a href=3D"http://www.quut.com/c/ANSI-C-g=
+rammar-y.html#type_qualifier_list">type_qualifier_list</a> ']'
+	| direct_abstract_declarator '[' <a href=3D"http://www.quut.com/c/ANSI-C-g=
+rammar-y.html#assignment_expression">assignment_expression</a> ']'
+	| '(' ')'
+	| '(' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#parameter_typ=
+e_list">parameter_type_list</a> ')'
+	| direct_abstract_declarator '(' ')'
+	| direct_abstract_declarator '(' <a href=3D"http://www.quut.com/c/ANSI-C-g=
+rammar-y.html#parameter_type_list">parameter_type_list</a> ')'
+	;
+
+<a name=3D"initializer">initializer</a>
+	: '{' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#initializer_l=
+ist">initializer_list</a> '}'
+	| '{' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#initializer_l=
+ist">initializer_list</a> ',' '}'
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#assignment_expres=
+sion">assignment_expression</a>
+	;
+
+<a name=3D"initializer_list">initializer_list</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#designation">desi=
+gnation</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#initiali=
+zer">initializer</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#initializer">init=
+ializer</a>
+	| initializer_list ',' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.h=
+tml#designation">designation</a> <a href=3D"http://www.quut.com/c/ANSI-C-gr=
+ammar-y.html#initializer">initializer</a>
+	| initializer_list ',' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.h=
+tml#initializer">initializer</a>
+	;
+
+<a name=3D"designation">designation</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#designator_list">=
+designator_list</a> '=3D'
+	;
+
+<a name=3D"designator_list">designator_list</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#designator">desig=
+nator</a>
+	| designator_list <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#d=
+esignator">designator</a>
+	;
+
+<a name=3D"designator">designator</a>
+	: '[' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#constant_expr=
+ession">constant_expression</a> ']'
+	| '.' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#IDENTIFI=
+ER">IDENTIFIER</a>
+	;
+
+<a name=3D"static_assert_declaration">static_assert_declaration</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#STATIC_ASSER=
+T">STATIC_ASSERT</a> '(' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.=
+html#constant_expression">constant_expression</a> ',' <a href=3D"http://www=
+.quut.com/c/ANSI-C-grammar-l-2011.html#STRING_LITERAL">STRING_LITERAL</a> '=
+)' ';'
+	;
+
+<a name=3D"statement">statement</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#labeled_statement=
+">labeled_statement</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#compound_statemen=
+t">compound_statement</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#expression_statem=
+ent">expression_statement</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#selection_stateme=
+nt">selection_statement</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#iteration_stateme=
+nt">iteration_statement</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#jump_statement">j=
+ump_statement</a>
+	;
+
+<a name=3D"labeled_statement">labeled_statement</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#IDENTIFIER">=
+IDENTIFIER</a> ':' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#s=
+tatement">statement</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#CASE">CASE</=
+a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#constant_expressi=
+on">constant_expression</a> ':' <a href=3D"http://www.quut.com/c/ANSI-C-gra=
+mmar-y.html#statement">statement</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#DEFAULT">DEF=
+AULT</a> ':' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#stateme=
+nt">statement</a>
+	;
+
+<a name=3D"compound_statement">compound_statement</a>
+	: '{' '}'
+	| '{'  <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#block_item_l=
+ist">block_item_list</a> '}'
+	;
+
+<a name=3D"block_item_list">block_item_list</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#block_item">block=
+_item</a>
+	| block_item_list <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#b=
+lock_item">block_item</a>
+	;
+
+<a name=3D"block_item">block_item</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#declaration">decl=
+aration</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#statement">statem=
+ent</a>
+	;
+
+<a name=3D"expression_statement">expression_statement</a>
+	: ';'
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#expression">expre=
+ssion</a> ';'
+	;
+
+<a name=3D"selection_statement">selection_statement</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#IF">IF</a> '=
+(' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#expression">expre=
+ssion</a> ')' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#statem=
+ent">statement</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.h=
+tml#ELSE">ELSE</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#s=
+tatement">statement</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#IF">IF</a> '=
+(' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#expression">expre=
+ssion</a> ')' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#statem=
+ent">statement</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#SWITCH">SWIT=
+CH</a> '(' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#expressio=
+n">expression</a> ')' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.htm=
+l#statement">statement</a>
+	;
+
+<a name=3D"iteration_statement">iteration_statement</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#WHILE">WHILE=
+</a> '(' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#expression"=
+>expression</a> ')' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#=
+statement">statement</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#DO">DO</a> <=
+a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#statement">statement<=
+/a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#WHILE">WHIL=
+E</a> '(' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#expression=
+">expression</a> ')' ';'
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#FOR">FOR</a>=
+ '(' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#expression_stat=
+ement">expression_statement</a> <a href=3D"http://www.quut.com/c/ANSI-C-gra=
+mmar-y.html#expression_statement">expression_statement</a> ')' <a href=3D"h=
+ttp://www.quut.com/c/ANSI-C-grammar-y.html#statement">statement</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#FOR">FOR</a>=
+ '(' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#expression_stat=
+ement">expression_statement</a> <a href=3D"http://www.quut.com/c/ANSI-C-gra=
+mmar-y.html#expression_statement">expression_statement</a> <a href=3D"http:=
+//www.quut.com/c/ANSI-C-grammar-y.html#expression">expression</a> ')' <a hr=
+ef=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#statement">statement</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#FOR">FOR</a>=
+ '(' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#declaration">de=
+claration</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#expres=
+sion_statement">expression_statement</a> ')' <a href=3D"http://www.quut.com=
+/c/ANSI-C-grammar-y.html#statement">statement</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#FOR">FOR</a>=
+ '(' <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#declaration">de=
+claration</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#expres=
+sion_statement">expression_statement</a> <a href=3D"http://www.quut.com/c/A=
+NSI-C-grammar-y.html#expression">expression</a> ')' <a href=3D"http://www.q=
+uut.com/c/ANSI-C-grammar-y.html#statement">statement</a>
+	;
+
+<a name=3D"jump_statement">jump_statement</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#GOTO">GOTO</=
+a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#IDENTIFIER">=
+IDENTIFIER</a> ';'
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#CONTINUE">CO=
+NTINUE</a> ';'
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#BREAK">BREAK=
+</a> ';'
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#RETURN">RETU=
+RN</a> ';'
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-l-2011.html#RETURN">RETU=
+RN</a> <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#expression">e=
+xpression</a> ';'
+	;
+
+<a name=3D"translation_unit">translation_unit</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#external_declarat=
+ion">external_declaration</a>
+	| translation_unit <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#=
+external_declaration">external_declaration</a>
+	;
+
+<a name=3D"external_declaration">external_declaration</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#function_definiti=
+on">function_definition</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#declaration">decl=
+aration</a>
+	;
+
+<a name=3D"function_definition">function_definition</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#declaration_speci=
+fiers">declaration_specifiers</a> <a href=3D"http://www.quut.com/c/ANSI-C-g=
+rammar-y.html#declarator">declarator</a> <a href=3D"http://www.quut.com/c/A=
+NSI-C-grammar-y.html#declaration_list">declaration_list</a> <a href=3D"http=
+://www.quut.com/c/ANSI-C-grammar-y.html#compound_statement">compound_statem=
+ent</a>
+	| <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#declaration_speci=
+fiers">declaration_specifiers</a> <a href=3D"http://www.quut.com/c/ANSI-C-g=
+rammar-y.html#declarator">declarator</a> <a href=3D"http://www.quut.com/c/A=
+NSI-C-grammar-y.html#compound_statement">compound_statement</a>
+	;
+
+<a name=3D"declaration_list">declaration_list</a>
+	: <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#declaration">decl=
+aration</a>
+	| declaration_list <a href=3D"http://www.quut.com/c/ANSI-C-grammar-y.html#=
+declaration">declaration</a>
+	;
+
+%%
+#include &lt;stdio.h&gt;
+
+void yyerror(const char *s)
+{
+	fflush(stdout);
+	fprintf(stderr, "*** %s\n", s);
+}
+</pre>
+
+
+</body></html>
+------MultipartBoundary--bgliltWeFjclm1df8jVlW0Hx5tHBOABUVxvTxFnZFH----
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: cid:css-e4ec452d-a20b-47ba-b0c2-f304e9a83e8c@mhtml.blink
+
+@charset "utf-8";
+
+body { margin: 3em; }
+------MultipartBoundary--bgliltWeFjclm1df8jVlW0Hx5tHBOABUVxvTxFnZFH------
