@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta charset="UTF-8">
+<style>
+h1 { text-align: center; }
+span.underline { text-decoration: underline; }
+</style>
+<title>SLIST_HEAD.3</title>
+</head>
+
+<body>
+
+<p>I would appreciate any donations. <a href="https://www.amazon.co.jp/gp/registry/wishlist/USJ5CIYU59Q2">Wishlist</a> or send e-mail type donations to maekawa AT daemon-systems.org.</p>
+
+<p>Thank you.</p>
+
+<hr>
+
+<pre>
+QUEUE(3)                   Library Functions Manual                   QUEUE(3)
+
+<strong>NAME</strong>
+     <strong>SLIST_HEAD</strong>, <strong>SLIST_HEAD_INITIALIZER</strong>, <strong>SLIST_ENTRY</strong>, <strong>SLIST_FIRST</strong>,
+     <strong>SLIST_EMPTY</strong>, <strong>SLIST_NEXT</strong>, <strong>SLIST_FOREACH</strong>, <strong>SLIST_FOREACH_SAFE</strong>, <strong>SLIST_INIT</strong>,
+     <strong>SLIST_INSERT_AFTER</strong>, <strong>SLIST_INSERT_HEAD</strong>, <strong>SLIST_REMOVE_AFTER</strong>,
+     <strong>SLIST_REMOVE_HEAD</strong>, <strong>SLIST_REMOVE</strong>, <strong>LIST_HEAD</strong>, <strong>LIST_HEAD_INITIALIZER</strong>,
+     <strong>LIST_ENTRY</strong>, <strong>LIST_FIRST</strong>, <strong>LIST_EMPTY</strong>, <strong>LIST_NEXT</strong>, <strong>LIST_FOREACH</strong>,
+     <strong>LIST_FOREACH_SAFE</strong>, <strong>LIST_INIT</strong>, <strong>LIST_INSERT_AFTER</strong>, <strong>LIST_INSERT_BEFORE</strong>,
+     <strong>LIST_INSERT_HEAD</strong>, <strong>LIST_REMOVE</strong>, <strong>LIST_REPLACE</strong>, <strong>LIST_MOVE</strong>, <strong>SIMPLEQ_HEAD</strong>,
+     <strong>SIMPLEQ_HEAD_INITIALIZER</strong>, <strong>SIMPLEQ_ENTRY</strong>, <strong>SIMPLEQ_FIRST</strong>, <strong>SIMPLEQ_EMPTY</strong>,
+     <strong>SIMPLEQ_NEXT</strong>, <strong>SIMPLEQ_LAST</strong>, <strong>SIMPLEQ_FOREACH</strong>, <strong>SIMPLEQ_FOREACH_SAFE</strong>,
+     <strong>SIMPLEQ_INIT</strong>, <strong>SIMPLEQ_INSERT_AFTER</strong>, <strong>SIMPLEQ_INSERT_HEAD</strong>,
+     <strong>SIMPLEQ_INSERT_TAIL</strong>, <strong>SIMPLEQ_REMOVE_AFTER</strong>, <strong>SIMPLEQ_REMOVE_HEAD</strong>,
+     <strong>SIMPLEQ_REMOVE</strong>, <strong>SIMPLEQ_CONCAT</strong>, <strong>TAILQ_HEAD</strong>, <strong>TAILQ_HEAD_INITIALIZER</strong>,
+     <strong>TAILQ_ENTRY</strong>, <strong>TAILQ_FIRST</strong>, <strong>TAILQ_NEXT</strong>, <strong>TAILQ_LAST</strong>, <strong>TAILQ_PREV</strong>,
+     <strong>TAILQ_EMPTY</strong>, <strong>TAILQ_FOREACH</strong>, <strong>TAILQ_FOREACH_SAFE</strong>, <strong>TAILQ_FOREACH_REVERSE</strong>,
+     <strong>TAILQ_FOREACH_REVERSE_SAFE</strong>, <strong>TAILQ_INIT</strong>, <strong>TAILQ_INSERT_AFTER</strong>,
+     <strong>TAILQ_INSERT_BEFORE</strong>, <strong>TAILQ_INSERT_HEAD</strong>, <strong>TAILQ_INSERT_TAIL</strong>, <strong>TAILQ_REMOVE</strong>,
+     <strong>TAILQ_REPLACE</strong>, <strong>TAILQ_CONCAT</strong>, <strong>STAILQ_HEAD</strong>, <strong>STAILQ_HEAD_INITIALIZER</strong>,
+     <strong>STAILQ_ENTRY</strong>, <strong>STAILQ_FIRST</strong>, <strong>STAILQ_EMPTY</strong>, <strong>STAILQ_NEXT</strong>, <strong>STAILQ_LAST</strong>,
+     <strong>STAILQ_FOREACH</strong>, <strong>STAILQ_FOREACH_SAFE</strong>, <strong>STAILQ_INIT</strong>, <strong>STAILQ_INSERT_AFTER</strong>,
+     <strong>STAILQ_INSERT_HEAD</strong>, <strong>STAILQ_INSERT_TAIL</strong>, <strong>STAILQ_REMOVE_HEAD</strong>,
+     <strong>STAILQ_REMOVE</strong>, <strong>STAILQ_CONCAT</strong> - implementations of singly-linked lists,
+     lists, simple queues, tail queues, and singly-linked tail queues
+
+<strong>SYNOPSIS</strong>
+     <strong>#include</strong> <strong>&lt;sys/queue.h&gt;</strong>
+
+     <strong>SLIST_HEAD</strong>(<span class="underline">HEADNAME</span>, <span class="underline">TYPE</span>);
+
+     <strong>SLIST_HEAD_INITIALIZER</strong>(<span class="underline">head</span>);
+
+     <strong>SLIST_ENTRY</strong>(<span class="underline">TYPE</span>);
+
+     <span class="underline">TYPE</span> <span class="underline">*</span>
+     <strong>SLIST_FIRST</strong>(<span class="underline">SLIST_HEAD</span> <span class="underline">*head</span>);
+
+     <span class="underline">int</span>
+     <strong>SLIST_EMPTY</strong>(<span class="underline">SLIST_HEAD</span> <span class="underline">*head</span>);
+
+     <span class="underline">TYPE</span> <span class="underline">*</span>
+     <strong>SLIST_NEXT</strong>(<span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">SLIST_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>SLIST_FOREACH</strong>(<span class="underline">TYPE</span> <span class="underline">*var</span>, <span class="underline">SLIST_HEAD</span> <span class="underline">*head</span>, <span class="underline">SLIST_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>SLIST_FOREACH_SAFE</strong>(<span class="underline">TYPE</span> <span class="underline">*var</span>, <span class="underline">SLIST_HEAD</span> <span class="underline">*head</span>, <span class="underline">SLIST_ENTRY</span> <span class="underline">NAME</span>,
+         <span class="underline">TYPE</span> <span class="underline">*tmp</span>);
+
+     <strong>SLIST_INIT</strong>(<span class="underline">SLIST_HEAD</span> <span class="underline">*head</span>);
+
+     <strong>SLIST_INSERT_HEAD</strong>(<span class="underline">SLIST_HEAD</span> <span class="underline">*head</span>, <span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">SLIST_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>SLIST_INSERT_AFTER</strong>(<span class="underline">TYPE</span> <span class="underline">*listelm</span>, <span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">SLIST_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>SLIST_REMOVE</strong>(<span class="underline">SLIST_HEAD</span> <span class="underline">*head</span>, <span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">TYPE</span>, <span class="underline">SLIST_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>SLIST_REMOVE_HEAD</strong>(<span class="underline">SLIST_HEAD</span> <span class="underline">*head</span>, <span class="underline">SLIST_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>LIST_HEAD</strong>(<span class="underline">HEADNAME</span>, <span class="underline">TYPE</span>);
+
+     <strong>LIST_HEAD_INITIALIZER</strong>(<span class="underline">head</span>);
+
+     <strong>LIST_ENTRY</strong>(<span class="underline">TYPE</span>);
+
+     <span class="underline">TYPE</span> <span class="underline">*</span>
+     <strong>LIST_FIRST</strong>(<span class="underline">LIST_HEAD</span> <span class="underline">*head</span>);
+
+     <span class="underline">TYPE</span> <span class="underline">*</span>
+     <strong>LIST_NEXT</strong>(<span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">LIST_ENTRY</span> <span class="underline">NAME</span>);
+
+     <span class="underline">int</span>
+     <strong>LIST_EMPTY</strong>(<span class="underline">LIST_HEAD</span> <span class="underline">*head</span>);
+
+     <strong>LIST_FOREACH</strong>(<span class="underline">TYPE</span> <span class="underline">*var</span>, <span class="underline">LIST_HEAD</span> <span class="underline">*head</span>, <span class="underline">LIST_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>LIST_FOREACH_SAFE</strong>(<span class="underline">TYPE</span> <span class="underline">*var</span>, <span class="underline">LIST_HEAD</span> <span class="underline">*head</span>, <span class="underline">LIST_ENTRY</span> <span class="underline">NAME</span>,
+         <span class="underline">TYPE</span> <span class="underline">*tmp</span>);
+
+     <strong>LIST_INIT</strong>(<span class="underline">LIST_HEAD</span> <span class="underline">*head</span>);
+
+     <strong>LIST_INSERT_AFTER</strong>(<span class="underline">TYPE</span> <span class="underline">*listelm</span>, <span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">LIST_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>LIST_INSERT_BEFORE</strong>(<span class="underline">TYPE</span> <span class="underline">*listelm</span>, <span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">LIST_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>LIST_INSERT_HEAD</strong>(<span class="underline">LIST_HEAD</span> <span class="underline">*head</span>, <span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">LIST_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>LIST_REMOVE</strong>(<span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">LIST_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>LIST_REPLACE</strong>(<span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">TYPE</span> <span class="underline">*new</span>, <span class="underline">LIST_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>LIST_MOVE</strong>(<span class="underline">LIST_HEAD</span> <span class="underline">*head1</span>, <span class="underline">LIST_HEAD</span> <span class="underline">*head2</span>, <span class="underline">LIST_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>SIMPLEQ_HEAD</strong>(<span class="underline">HEADNAME</span>, <span class="underline">TYPE</span>);
+
+     <strong>SIMPLEQ_HEAD_INITIALIZER</strong>(<span class="underline">head</span>);
+
+     <strong>SIMPLEQ_ENTRY</strong>(<span class="underline">TYPE</span>);
+
+     <span class="underline">TYPE</span> <span class="underline">*</span>
+     <strong>SIMPLEQ_FIRST</strong>(<span class="underline">SIMPLEQ_HEAD</span> <span class="underline">*head</span>);
+
+     <span class="underline">int</span>
+     <strong>SIMPLEQ_EMPTY</strong>(<span class="underline">SIMPLEQ_HEAD</span> <span class="underline">*head</span>);
+
+     <span class="underline">TYPE</span> <span class="underline">*</span>
+     <strong>SIMPLEQ_NEXT</strong>(<span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">SIMPLEQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <span class="underline">TYPE</span> <span class="underline">*</span>
+     <strong>SIMPLEQ_LAST</strong>(<span class="underline">SIMPLEQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">SIMPLEQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>SIMPLEQ_FOREACH</strong>(<span class="underline">TYPE</span> <span class="underline">*var</span>, <span class="underline">SIMPLEQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">SIMPLEQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>SIMPLEQ_FOREACH_SAFE</strong>(<span class="underline">TYPE</span> <span class="underline">*var</span>, <span class="underline">SIMPLEQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">SIMPLEQ_ENTRY</span> <span class="underline">NAME</span>,
+         <span class="underline">TYPE</span> <span class="underline">*tmp</span>);
+
+     <strong>SIMPLEQ_INIT</strong>(<span class="underline">SIMPLEQ_HEAD</span> <span class="underline">*head</span>);
+
+     <strong>SIMPLEQ_INSERT_HEAD</strong>(<span class="underline">SIMPLEQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">SIMPLEQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>SIMPLEQ_INSERT_TAIL</strong>(<span class="underline">SIMPLEQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">SIMPLEQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>SIMPLEQ_INSERT_AFTER</strong>(<span class="underline">SIMPLEQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">TYPE</span> <span class="underline">*listelm</span>, <span class="underline">TYPE</span> <span class="underline">*elm</span>,
+         <span class="underline">SIMPLEQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>SIMPLEQ_REMOVE_HEAD</strong>(<span class="underline">SIMPLEQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">SIMPLEQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>SIMPLEQ_REMOVE_AFTER</strong>(<span class="underline">SIMPLEQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">SIMPLEQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>SIMPLEQ_REMOVE</strong>(<span class="underline">SIMPLEQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">TYPE</span>, <span class="underline">SIMPLEQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>SIMPLEQ_CONCAT</strong>(<span class="underline">SIMPLEQ_HEAD</span> <span class="underline">*head1</span>, <span class="underline">SIMPLEQ_HEAD</span> <span class="underline">*head2</span>);
+
+     <strong>TAILQ_HEAD</strong>(<span class="underline">HEADNAME</span>, <span class="underline">TYPE</span>);
+
+     <strong>TAILQ_HEAD_INITIALIZER</strong>(<span class="underline">head</span>);
+
+     <strong>TAILQ_ENTRY</strong>(<span class="underline">TYPE</span>);
+
+     <span class="underline">TYPE</span> <span class="underline">*</span>
+     <strong>TAILQ_FIRST</strong>(<span class="underline">TAILQ_HEAD</span> <span class="underline">*head</span>);
+
+     <span class="underline">TYPE</span> <span class="underline">*</span>
+     <strong>TAILQ_NEXT</strong>(<span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">TAILQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <span class="underline">TYPE</span> <span class="underline">*</span>
+     <strong>TAILQ_LAST</strong>(<span class="underline">TAILQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">HEADNAME</span>);
+
+     <span class="underline">TYPE</span> <span class="underline">*</span>
+     <strong>TAILQ_PREV</strong>(<span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">HEADNAME</span>, <span class="underline">TAILQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <span class="underline">int</span>
+     <strong>TAILQ_EMPTY</strong>(<span class="underline">TAILQ_HEAD</span> <span class="underline">*head</span>);
+
+     <strong>TAILQ_FOREACH</strong>(<span class="underline">TYPE</span> <span class="underline">*var</span>, <span class="underline">TAILQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">TAILQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>TAILQ_FOREACH_SAFE</strong>(<span class="underline">TYPE</span> <span class="underline">*var</span>, <span class="underline">TAILQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">TAILQ_ENTRY</span> <span class="underline">NAME</span>,
+         <span class="underline">TYPE</span> <span class="underline">*tmp</span>);
+
+     <strong>TAILQ_FOREACH_REVERSE</strong>(<span class="underline">TYPE</span> <span class="underline">*var</span>, <span class="underline">TAILQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">HEADNAME</span>,
+         <span class="underline">TAILQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>TAILQ_FOREACH_REVERSE_SAFE</strong>(<span class="underline">TYPE</span> <span class="underline">*var</span>, <span class="underline">TAILQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">HEADNAME</span>,
+         <span class="underline">TAILQ_ENTRY</span> <span class="underline">NAME</span>, <span class="underline">TYPE</span> <span class="underline">*tmp</span>);
+
+     <strong>TAILQ_INIT</strong>(<span class="underline">TAILQ_HEAD</span> <span class="underline">*head</span>);
+
+     <strong>TAILQ_INSERT_HEAD</strong>(<span class="underline">TAILQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">TAILQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>TAILQ_INSERT_TAIL</strong>(<span class="underline">TAILQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">TAILQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>TAILQ_INSERT_AFTER</strong>(<span class="underline">TAILQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">TYPE</span> <span class="underline">*listelm</span>, <span class="underline">TYPE</span> <span class="underline">*elm</span>,
+         <span class="underline">TAILQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>TAILQ_INSERT_BEFORE</strong>(<span class="underline">TYPE</span> <span class="underline">*listelm</span>, <span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">TAILQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>TAILQ_REMOVE</strong>(<span class="underline">TAILQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">TAILQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>TAILQ_REPLACE</strong>(<span class="underline">TAILQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">TYPE</span> <span class="underline">*new</span>, <span class="underline">TAILQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>TAILQ_CONCAT</strong>(<span class="underline">TAILQ_HEAD</span> <span class="underline">*head1</span>, <span class="underline">TAILQ_HEAD</span> <span class="underline">*head2</span>, <span class="underline">TAILQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>STAILQ_HEAD</strong>(<span class="underline">HEADNAME</span>, <span class="underline">TYPE</span>);
+
+     <strong>STAILQ_HEAD_INITIALIZER</strong>(<span class="underline">head</span>);
+
+     <strong>STAILQ_ENTRY</strong>(<span class="underline">TYPE</span>);
+
+     <span class="underline">TYPE</span> <span class="underline">*</span>
+     <strong>STAILQ_FIRST</strong>(<span class="underline">STAILQ_HEAD</span> <span class="underline">*head</span>);
+
+     <span class="underline">int</span>
+     <strong>STAILQ_EMPTY</strong>(<span class="underline">STAILQ_HEAD</span> <span class="underline">*head</span>);
+
+     <span class="underline">TYPE</span> <span class="underline">*</span>
+     <strong>STAILQ_NEXT</strong>(<span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">STAILQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <span class="underline">TYPE</span> <span class="underline">*</span>
+     <strong>STAILQ_LAST</strong>(<span class="underline">STAILQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">STAILQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>STAILQ_FOREACH</strong>(<span class="underline">TYPE</span> <span class="underline">*var</span>, <span class="underline">STAILQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">STAILQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>STAILQ_FOREACH_SAFE</strong>(<span class="underline">TYPE</span> <span class="underline">*var</span>, <span class="underline">STAILQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">STAILQ_ENTRY</span> <span class="underline">NAME</span>,
+         <span class="underline">TYPE</span> <span class="underline">*tmp</span>);
+
+     <strong>STAILQ_INIT</strong>(<span class="underline">STAILQ_HEAD</span> <span class="underline">*head</span>);
+
+     <strong>STAILQ_INSERT_HEAD</strong>(<span class="underline">STAILQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">STAILQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>STAILQ_INSERT_TAIL</strong>(<span class="underline">STAILQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">STAILQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>STAILQ_INSERT_AFTER</strong>(<span class="underline">STAILQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">TYPE</span> <span class="underline">*listelm</span>, <span class="underline">TYPE</span> <span class="underline">*elm</span>,
+         <span class="underline">STAILQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>STAILQ_REMOVE_HEAD</strong>(<span class="underline">STAILQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">STAILQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>STAILQ_REMOVE</strong>(<span class="underline">STAILQ_HEAD</span> <span class="underline">*head</span>, <span class="underline">TYPE</span> <span class="underline">*elm</span>, <span class="underline">TYPE</span>, <span class="underline">STAILQ_ENTRY</span> <span class="underline">NAME</span>);
+
+     <strong>STAILQ_CONCAT</strong>(<span class="underline">STAILQ_HEAD</span> <span class="underline">*head1</span>, <span class="underline">STAILQ_HEAD</span> <span class="underline">*head2</span>);
+
+<strong>DESCRIPTION</strong>
+     These macros define and operate on five types of data structures: singly-
+     linked lists, simple queues, lists, tail queues, and singly-linked tail
+     queues.  All five structures support the following functionality:
+           1.   Insertion of a new entry at the head of the list.
+           2.   Insertion of a new entry after any element in the list.
+           3.   Removal of any entry in the list.
+           4.   Forward traversal through the list.
+
+     Singly-linked lists are the simplest of the four data structures and
+     support only the above functionality.  Singly-linked lists are ideal for
+     applications with large datasets and few or no removals, or for
+     implementing a LIFO queue.
+
+     Simple queues add the following functionality:
+           1.   Entries can be added at the end of a list.
+           2.   They may be concatenated.
+     However:
+           1.   Entries may not be added before any element in the list.
+           2.   All list insertions and removals must specify the head of the
+                list.
+           3.   Each head entry requires two pointers rather than one.
+
+     Simple queues are ideal for applications with large datasets and few or
+     no removals, or for implementing a FIFO queue.
+
+     All doubly linked types of data structures (lists and tail queues)
+     additionally allow:
+           1.   Insertion of a new entry before any element in the list.
+           2.   O(1) removal of any entry in the list.
+     However:
+           1.   Each element requires two pointers rather than one.
+           2.   Code size and execution time of operations (except for
+                removal) is about twice that of the singly-linked data-
+                structures.
+
+     Linked lists are the simplest of the doubly linked data structures and
+     support only the above functionality over singly-linked lists.
+
+     Tail queues add the following functionality:
+           1.   Entries can be added at the end of a list.
+           2.   They may be concatenated.
+     However:
+           1.   All list insertions and removals, except insertion before
+                another element, must specify the head of the list.
+           2.   Each head entry requires two pointers rather than one.
+           3.   Code size is about 15% greater and operations run about 20%
+                slower than lists.
+
+     Circular queues add the following functionality:
+           1.   Entries can be added at the end of a list.
+           2.   They may be traversed backwards, from tail to head.
+     However:
+           1.   All list insertions and removals must specify the head of the
+                list.
+           2.   Each head entry requires two pointers rather than one.
+           3.   The termination condition for traversal is more complex.
+           4.   Code size is about 40% greater and operations run about 45%
+                slower than lists.
+
+     In the macro definitions, <span class="underline">TYPE</span> is the name of a user defined structure,
+     that must contain a field of type SLIST_ENTRY, LIST_ENTRY, SIMPLEQ_ENTRY,
+     TAILQ_ENTRY, or STAILQ_ENTRY, named <span class="underline">NAME</span>.  The argument <span class="underline">HEADNAME</span> is the
+     name of a user defined structure that must be declared using the macros
+     LIST_HEAD, SIMPLEQ_HEAD, SLIST_HEAD, or TAILQ_HEAD.  See the examples
+     below for further explanation of how these macros are used.
+
+   <strong>Summary</strong> <strong>of</strong> <strong>Operations</strong>
+     The following table summarizes the supported macros for each type of data
+     structure.
+
+     +----------------------+-------+------+---------+-------+--------+
+     |                      | SLIST | LIST | SIMPLEQ | TAILQ | STAILQ |
+     +----------------------+-------+------+---------+-------+--------+
+     |_FIRST                |   +   |  +   |    +    |   +   |   +    |
+     |_EMPTY                |   +   |  +   |    +    |   +   |   +    |
+     |_NEXT                 |   +   |  +   |    +    |   +   |   +    |
+     |_PREV                 |   -   |  -   |    -    |   +   |   -    |
+     |_LAST                 |   -   |  -   |    +    |   +   |   +    |
+     |_FOREACH              |   +   |  +   |    +    |   +   |   +    |
+     |_FOREACH_SAFE         |   +   |  +   |    +    |   +   |   +    |
+     |_FOREACH_REVERSE      |   -   |  -   |    -    |   +   |   -    |
+     |_FOREACH_REVERSE_SAFE |   -   |  -   |    -    |   +   |   -    |
+     |_INSERT_HEAD          |   +   |  +   |    +    |   +   |   +    |
+     |_INSERT_AFTER         |   +   |  +   |    +    |   +   |   +    |
+     |_INSERT_BEFORE        |   -   |  +   |    -    |   +   |   -    |
+     |_INSERT_TAIL          |   -   |  -   |    +    |   +   |   +    |
+     |_REMOVE               |   +   |  +   |    +    |   +   |   +    |
+     |_REMOVE_HEAD          |   +   |  -   |    +    |   -   |   +    |
+     |_REMOVE_AFTER         |   -   |  -   |    +    |   -   |   +    |
+     |_REPLACE              |   -   |  +   |    -    |   +   |   -    |
+     |_CONCAT               |   -   |  -   |    +    |   +   |   +    |
+     +----------------------+-------+------+---------+-------+--------+
+<strong>SINGLY-LINKED</strong> <strong>LISTS</strong>
+     A singly-linked list is headed by a structure defined by the <strong>SLIST_HEAD</strong>()
+     macro.  This structure contains a single pointer to the first element on
+     the list.  The elements are singly linked for minimum space and pointer
+     manipulation overhead at the expense of O(n) removal for arbitrary
+     elements.  New elements can be added to the list after an existing
+     element or at the head of the list.  An <span class="underline">SLIST_HEAD</span> structure is declared
+     as follows:
+
+           SLIST_HEAD(HEADNAME, TYPE) head;
+
+     where <span class="underline">HEADNAME</span> is the name of the structure to be defined, and <span class="underline">TYPE</span> is
+     the type of the elements to be linked into the list.  A pointer to the
+     head of the list can later be declared as:
+
+           struct HEADNAME *headp;
+
+     (The names head and headp are user selectable.)
+
+     The macro <strong>SLIST_HEAD_INITIALIZER</strong>() evaluates to an initializer for the
+     list <span class="underline">head</span>.
+
+     The macro <strong>SLIST_ENTRY</strong>() declares a structure that connects the elements
+     in the list.
+
+     The macro <strong>SLIST_FIRST</strong>() returns the first element in the list or NULL if
+     the list is empty.
+
+     The macro <strong>SLIST_EMPTY</strong>() evaluates to true if there are no elements in the
+     list.
+
+     The macro <strong>SLIST_NEXT</strong>() returns the next element in the list.
+
+     <strong>SLIST_FOREACH</strong>() traverses the list referenced by <span class="underline">head</span> in the forward
+     direction, assigning each element in turn to <span class="underline">var</span>.
+
+     The SAFE version uses <span class="underline">tmp</span> to hold the next element, so <span class="underline">var</span> may be freed
+     or removed from the list.
+
+     The macro <strong>SLIST_INIT</strong>() initializes the list referenced by <span class="underline">head</span>.
+
+     The macro <strong>SLIST_INSERT_HEAD</strong>() inserts the new element <span class="underline">elm</span> at the head of
+     the list.
+
+     The macro <strong>SLIST_INSERT_AFTER</strong>() inserts the new element <span class="underline">elm</span> after the
+     element <span class="underline">listelm</span>.
+
+     The macro <strong>SLIST_REMOVE</strong>() removes the element <span class="underline">elm</span> from the list.
+
+     The macro <strong>SLIST_REMOVE_HEAD</strong>() removes the first element from the head of
+     the list.  For optimum efficiency, elements being removed from the head
+     of the list should explicitly use this macro instead of the generic
+     <strong>SLIST_REMOVE</strong>() macro.
+
+     The macro <strong>SLIST_REMOVE_AFTER</strong>() removes the element after the one
+     specified.  For optimum efficiency, elements being removed after a
+     specified one should explicitly use this macro instead of the generic
+     <strong>SLIST_REMOVE</strong>()
+
+<strong>SINGLY-LINKED</strong> <strong>LIST</strong> <strong>EXAMPLE</strong>
+     SLIST_HEAD(slisthead, entry) head =
+         SLIST_HEAD_INITIALIZER(head);
+     struct slisthead *headp;                /* Singly-linked List head. */
+     struct entry {
+             ...
+             SLIST_ENTRY(entry) entries;     /* Singly-linked List. */
+             ...
+     } *n1, *n2, *n3, *np;
+
+     SLIST_INIT(&amp;head);                      /* Initialize the list. */
+
+     n1 = malloc(sizeof(struct entry));      /* Insert at the head. */
+     SLIST_INSERT_HEAD(&amp;head, n1, entries);
+
+     n2 = malloc(sizeof(struct entry));      /* Insert after. */
+     SLIST_INSERT_AFTER(n1, n2, entries);
+
+     SLIST_REMOVE(&amp;head, n2, entry, entries);/* Deletion. */
+     free(n2);
+
+     n3 = SLIST_FIRST(&amp;head);
+     SLIST_REMOVE_HEAD(&amp;head, entries);      /* Deletion from the head. */
+     free(n3);
+
+     SLIST_FOREACH(np, &amp;head, entries)       /* Forward traversal. */
+             np-&gt; ...
+
+     while (!SLIST_EMPTY(&amp;head)) {           /* List Deletion. */
+             n1 = SLIST_FIRST(&amp;head);
+             SLIST_REMOVE_HEAD(&amp;head, entries);
+             free(n1);
+     }
+
+<strong>LISTS</strong>
+     A list is headed by a structure defined by the <strong>LIST_HEAD</strong>() macro.  This
+     structure contains a single pointer to the first element on the list.
+     The elements are doubly linked so that an arbitrary element can be
+     removed without traversing the list.  New elements can be added to the
+     list after an existing element, before an existing element, or at the
+     head of the list.  A <span class="underline">LIST_HEAD</span> structure is declared as follows:
+
+           LIST_HEAD(HEADNAME, TYPE) head;
+
+     where <span class="underline">HEADNAME</span> is the name of the structure to be defined, and <span class="underline">TYPE</span> is
+     the type of the elements to be linked into the list.  A pointer to the
+     head of the list can later be declared as:
+
+           struct HEADNAME *headp;
+
+     (The names head and headp are user selectable.)
+
+     The macro <strong>LIST_ENTRY</strong>() declares a structure that connects the elements in
+     the list.
+
+     The macro <strong>LIST_HEAD_INITIALIZER</strong>() provides a value which can be used to
+     initialize a list head at compile time, and is used at the point that the
+     list head variable is declared, like:
+
+           struct HEADNAME head = LIST_HEAD_INITIALIZER(head);
+
+     The macro <strong>LIST_FIRST</strong>() returns the first element of the list <span class="underline">head</span>.
+
+     The macro <strong>LIST_EMPTY</strong>() returns true if the list <span class="underline">head</span> has no elements.
+
+     The macro <strong>LIST_NEXT</strong>() returns the element after the element <span class="underline">elm</span>.
+
+     The macro <strong>LIST_FOREACH</strong>() traverses the list referenced by <span class="underline">head</span> in the
+     forward direction, assigning each element in turn to <span class="underline">var</span>.
+
+     The SAFE version uses <span class="underline">tmp</span> to hold the next element, so <span class="underline">var</span> may be freed
+     or removed from the list.
+
+     The macro <strong>LIST_INIT</strong>() initializes the list referenced by <span class="underline">head</span>.
+
+     The macro <strong>LIST_INSERT_AFTER</strong>() inserts the new element <span class="underline">elm</span> after the
+     element <span class="underline">listelm</span>.
+
+     The macro <strong>LIST_INSERT_BEFORE</strong>() inserts the new element <span class="underline">elm</span> before the
+     element <span class="underline">listelm</span>.
+
+     The macro <strong>LIST_INSERT_HEAD</strong>() inserts the new element <span class="underline">elm</span> at the head of
+     the list.
+
+     The macro <strong>LIST_REMOVE</strong>() removes the element <span class="underline">elm</span> from the list.
+
+     The macro <strong>LIST_REPLACE</strong>() replaces the element <span class="underline">elm</span> with <span class="underline">new</span> in the list.
+
+     The macro <strong>LIST_MOVE</strong>() moves the list headed by <span class="underline">head1</span> onto the list headed
+     by <span class="underline">head2</span>, always making the former empty.
+
+<strong>LIST</strong> <strong>EXAMPLE</strong>
+     LIST_HEAD(listhead, entry) head;
+     struct listhead *headp;                 /* List head. */
+     struct entry {
+             ...
+             LIST_ENTRY(entry) entries;      /* List. */
+             ...
+     } *n1, *n2, *np;
+
+     LIST_INIT(&amp;head);                       /* Initialize the list. */
+
+     n1 = malloc(sizeof(struct entry));      /* Insert at the head. */
+     LIST_INSERT_HEAD(&amp;head, n1, entries);
+
+     n2 = malloc(sizeof(struct entry));      /* Insert after. */
+     LIST_INSERT_AFTER(n1, n2, entries);
+
+     n2 = malloc(sizeof(struct entry));      /* Insert before. */
+     LIST_INSERT_BEFORE(n1, n2, entries);
+
+     LIST_FOREACH(np, &amp;head, entries)        /* Forward traversal. */
+             np-&gt; ...
+
+     while (LIST_FIRST(&amp;head) != NULL)       /* Delete. */
+             LIST_REMOVE(LIST_FIRST(&amp;head), entries);
+     if (LIST_EMPTY(&amp;head))                  /* Test for emptiness. */
+             printf("nothing to do\n");
+
+<strong>SIMPLE</strong> <strong>QUEUES</strong>
+     A simple queue is headed by a structure defined by the <strong>SIMPLEQ_HEAD</strong>()
+     macro.  This structure contains a pair of pointers, one to the first
+     element in the simple queue and the other to the last element in the
+     simple queue.  The elements are singly linked for minimum space and
+     pointer manipulation overhead at the expense of O(n) removal for
+     arbitrary elements.  New elements can be added to the queue after an
+     existing element, at the head of the queue, or at the end of the queue.
+     A <span class="underline">SIMPLEQ_HEAD</span> structure is declared as follows:
+
+           SIMPLEQ_HEAD(HEADNAME, TYPE) head;
+
+     where HEADNAME is the name of the structure to be defined, and TYPE is
+     the type of the elements to be linked into the simple queue.  A pointer
+     to the head of the simple queue can later be declared as:
+
+           struct HEADNAME *headp;
+
+     (The names head and headp are user selectable.)
+
+     The macro <strong>SIMPLEQ_ENTRY</strong>() declares a structure that connects the elements
+     in the simple queue.
+
+     The macro <strong>SIMPLEQ_HEAD_INITIALIZER</strong>() provides a value which can be used
+     to initialize a simple queue head at compile time, and is used at the
+     point that the simple queue head variable is declared, like:
+
+           struct HEADNAME head = SIMPLEQ_HEAD_INITIALIZER(head);
+
+     The macro <strong>SIMPLEQ_FIRST</strong>() returns the first element of the simple queue
+     <span class="underline">head</span>.
+
+     The macro <strong>SIMPLEQ_EMPTY</strong>() returns true if the simple queue <span class="underline">head</span> has no
+     elements.
+
+     The macro <strong>SIMPLEQ_NEXT</strong>() returns the element after the element <span class="underline">elm</span>.
+
+     The macro <strong>SIMPLEQ_LAST</strong>() returns the last item on the simple queue.  If
+     the simple queue is empty the return value is NULL.
+
+     The macro <strong>SIMPLEQ_FOREACH</strong>() traverses the simple queue referenced by <span class="underline">head</span>
+     in the forward direction, assigning each element in turn to <span class="underline">var</span>.
+
+     The SAFE version uses <span class="underline">tmp</span> to hold the next element, so <span class="underline">var</span> may be freed
+     or removed from the list.
+
+     The macro <strong>SIMPLEQ_INIT</strong>() initializes the simple queue referenced by <span class="underline">head</span>.
+
+     The macro <strong>SIMPLEQ_INSERT_HEAD</strong>() inserts the new element <span class="underline">elm</span> at the head
+     of the simple queue.
+
+     The macro <strong>SIMPLEQ_INSERT_TAIL</strong>() inserts the new element <span class="underline">elm</span> at the end of
+     the simple queue.
+
+     The macro <strong>SIMPLEQ_INSERT_AFTER</strong>() inserts the new element <span class="underline">elm</span> after the
+     element <span class="underline">listelm</span>.
+
+     The macro <strong>SIMPLEQ_REMOVE_HEAD</strong>() removes the first element from the head
+     of the simple queue.  For optimum efficiency, elements being removed from
+     the head of the queue should explicitly use this macro instead of the
+     generic <strong>SIMPLEQ_REMOVE</strong>() macro.
+
+     The macro <strong>SIMPLEQ_REMOVE_AFTER</strong>() removes the element after the one
+     specified from the simple queue.  For optimum efficiency, elements being
+     removed after specified elements should explicitly use this macro instead
+     of the generic <strong>SIMPLEQ_REMOVE</strong>() macro.
+
+     The macro <strong>SIMPLEQ_REMOVE</strong>() removes <span class="underline">elm</span> from the simple queue.
+
+     The macro <strong>SIMPLEQ_CONCAT</strong>() concatenates the simple queue headed by <span class="underline">head2</span>
+     onto the end of the one headed by <span class="underline">head1</span>, removing all entries from the
+     former.
+
+<strong>SIMPLE</strong> <strong>QUEUE</strong> <strong>EXAMPLE</strong>
+     SIMPLEQ_HEAD(simplehead, entry) head;
+     struct simplehead *headp;               /* Simple queue head. */
+     struct entry {
+             ...
+             SIMPLEQ_ENTRY(entry) entries;   /* Simple queue. */
+             ...
+     } *n1, *n2, *np;
+
+     SIMPLEQ_INIT(&amp;head);                    /* Initialize the queue. */
+
+     n1 = malloc(sizeof(struct entry));      /* Insert at the head. */
+     SIMPLEQ_INSERT_HEAD(&amp;head, n1, entries);
+
+     n1 = malloc(sizeof(struct entry));      /* Insert at the tail. */
+     SIMPLEQ_INSERT_TAIL(&amp;head, n1, entries);
+
+     n2 = malloc(sizeof(struct entry));      /* Insert after. */
+     SIMPLEQ_INSERT_AFTER(&amp;head, n1, n2, entries);
+
+     SIMPLEQ_FOREACH(np, &amp;head, entries)     /* Forward traversal. */
+             np-&gt; ...
+
+     while (SIMPLEQ_FIRST(&amp;head) != NULL)    /* Delete. */
+             SIMPLEQ_REMOVE_HEAD(&amp;head, entries);
+     if (SIMPLEQ_EMPTY(&amp;head))               /* Test for emptiness. */
+             printf("nothing to do\n");
+
+<strong>TAIL</strong> <strong>QUEUES</strong>
+     A tail queue is headed by a structure defined by the <strong>TAILQ_HEAD</strong>() macro.
+     This structure contains a pair of pointers, one to the first element in
+     the tail queue and the other to the last element in the tail queue.  The
+     elements are doubly linked so that an arbitrary element can be removed
+     without traversing the tail queue.  New elements can be added to the
+     queue after an existing element, before an existing element, at the head
+     of the queue, or at the end the queue.  A <span class="underline">TAILQ_HEAD</span> structure is
+     declared as follows:
+
+           TAILQ_HEAD(HEADNAME, TYPE) head;
+
+     where HEADNAME is the name of the structure to be defined, and TYPE is
+     the type of the elements to be linked into the tail queue.  A pointer to
+     the head of the tail queue can later be declared as:
+
+           struct HEADNAME *headp;
+
+     (The names head and headp are user selectable.)
+
+     The macro <strong>TAILQ_ENTRY</strong>() declares a structure that connects the elements
+     in the tail queue.
+
+     The macro <strong>TAILQ_HEAD_INITIALIZER</strong>() provides a value which can be used to
+     initialize a tail queue head at compile time, and is used at the point
+     that the tail queue head variable is declared, like:
+
+           struct HEADNAME head = TAILQ_HEAD_INITIALIZER(head);
+
+     The macro <strong>TAILQ_FIRST</strong>() returns the first element of the tail queue <span class="underline">head</span>.
+
+     The macro <strong>TAILQ_NEXT</strong>() returns the element after the element <span class="underline">elm</span>.
+
+     The macro <strong>TAILQ_LAST</strong>() returns the last item on the tail queue.  If the
+     tail queue is empty the return value is NULL.
+
+     The macro <strong>TAILQ_PREV</strong>() returns the previous item on the tail queue, from
+     the one specified.  If the tail queue is empty the return value is NULL.
+
+     The macro <strong>TAILQ_EMPTY</strong>() returns true if the tail queue <span class="underline">head</span> has no
+     elements.
+
+     The macros <strong>TAILQ_FOREACH</strong>(), <strong>TAILQ_FOREACH_REVERSE</strong>(),
+     <strong>TAILQ_FOREACH_SAFE</strong>(), and <strong>TAILQ_FOREACH_REVERSE_SAFE</strong>() traverse the tail
+     queue referenced by <span class="underline">head</span> in the forward or reverse direction, assigning
+     each element in turn to <span class="underline">var</span>.
+
+     The SAFE versions use <span class="underline">tmp</span> to hold the next element, so <span class="underline">var</span> may be freed
+     or removed from the list.
+
+     The macro <strong>TAILQ_INIT</strong>() initializes the tail queue referenced by <span class="underline">head</span>.
+
+     The macro <strong>TAILQ_INSERT_HEAD</strong>() inserts the new element <span class="underline">elm</span> at the head of
+     the tail queue.
+
+     The macro <strong>TAILQ_INSERT_TAIL</strong>() inserts the new element <span class="underline">elm</span> at the end of
+     the tail queue.
+
+     The macro <strong>TAILQ_INSERT_AFTER</strong>() inserts the new element <span class="underline">elm</span> after the
+     element <span class="underline">listelm</span>.
+
+     The macro <strong>TAILQ_INSERT_BEFORE</strong>() inserts the new element <span class="underline">elm</span> before the
+     element <span class="underline">listelm</span>.
+
+     The macro <strong>TAILQ_REMOVE</strong>() removes the element <span class="underline">elm</span> from the tail queue.
+
+     The macro <strong>TAILQ_REPLACE</strong>() replaces the element <span class="underline">elm</span> with the <span class="underline">new</span> one
+     specified in the tail queue.
+
+     The macro <strong>TAILQ_CONCAT</strong>() concatenates the tail queue headed by <span class="underline">head2</span> onto
+     the end of the one headed by <span class="underline">head1</span>, removing all entries from the former.
+
+<strong>TAIL</strong> <strong>QUEUE</strong> <strong>EXAMPLE</strong>
+     TAILQ_HEAD(tailhead, entry) head;
+     struct tailhead *headp;                 /* Tail queue head. */
+     struct entry {
+             ...
+             TAILQ_ENTRY(entry) entries;     /* Tail queue. */
+             ...
+     } *n1, *n2, *np;
+
+     TAILQ_INIT(&amp;head);                      /* Initialize the queue. */
+
+     n1 = malloc(sizeof(struct entry));      /* Insert at the head. */
+     TAILQ_INSERT_HEAD(&amp;head, n1, entries);
+
+     n1 = malloc(sizeof(struct entry));      /* Insert at the tail. */
+     TAILQ_INSERT_TAIL(&amp;head, n1, entries);
+
+     n2 = malloc(sizeof(struct entry));      /* Insert after. */
+     TAILQ_INSERT_AFTER(&amp;head, n1, n2, entries);
+
+     n2 = malloc(sizeof(struct entry));      /* Insert before. */
+     TAILQ_INSERT_BEFORE(n1, n2, entries);
+
+     TAILQ_FOREACH(np, &amp;head, entries)       /* Forward traversal. */
+             np-&gt; ...
+                                             /* Reverse traversal. */
+     TAILQ_FOREACH_REVERSE(np, &amp;head, tailhead, entries)
+             np-&gt; ...
+
+     while (TAILQ_FIRST(&amp;head) != NULL)      /* Delete. */
+             TAILQ_REMOVE(&amp;head, TAILQ_FIRST(&amp;head), entries);
+     if (TAILQ_EMPTY(&amp;head))                 /* Test for emptiness. */
+             printf("nothing to do\n");
+
+<strong>SINGLY</strong> <strong>LINKED</strong> <strong>TAIL</strong> <strong>QUEUES</strong>
+     The macros prefixed with "<strong>STAILQ</strong><span class="underline">_</span>" (<strong>STAILQ_HEAD</strong>(),
+     <strong>STAILQ_HEAD_INITIALIZER</strong>(), <strong>STAILQ_ENTRY</strong>(), <strong>STAILQ_FOREACH</strong>(),
+     <strong>STAILQ_FOREACH_SAFE</strong>(), <strong>STAILQ_FIRST</strong>(), <strong>STAILQ_EMPTY</strong>(), <strong>STAILQ_NEXT</strong>(),
+     <strong>STAILQ_LAST</strong>(), <strong>STAILQ_INIT</strong>(), <strong>STAILQ_INSERT_HEAD</strong>(), <strong>STAILQ_INSERT_TAIL</strong>(),
+     <strong>STAILQ_INSERT_AFTER</strong>(), <strong>STAILQ_REMOVE_HEAD</strong>(), <strong>STAILQ_REMOVE</strong>(), and
+     <strong>STAILQ_CONCAT</strong>()) are functionally identical to these simple queue
+     functions, and are provided for compatibility with FreeBSD.
+
+<strong>NOTES</strong>
+     Some of these macros or functions perform no error checking, and invalid
+     usage leads to undefined behaviour.  In the case of macros or functions
+     that expect their arguments to be elements that are present in the list
+     or queue, passing an element that is not present is invalid.
+
+<strong>HISTORY</strong>
+     The <strong>queue</strong> functions first appeared in 4.4BSD.  The <strong>SIMPLEQ</strong> functions
+     first appeared in NetBSD 1.2.  The <strong>SLIST</strong> and <strong>STAILQ</strong> functions first
+     appeared in FreeBSD 2.1.5.
+
+NetBSD 8.99.34                  October 1, 2017                 NetBSD 8.99.34
+</pre>
+
+<hr>
+
+</body>
+
+</html>
